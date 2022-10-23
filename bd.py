@@ -1,28 +1,30 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # funcao apenas para conectar com o banco de dados e criar a tabela
 def create_table_monitoramento():
-    """ Connect to the PostgreSQL database server """
     try:
-
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
 
         conn = psycopg2.connect(
-            host="localhost",
-            database="monitoramento",
-            user="postgres",
-            password="----")
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password'))
 
         # create a cursor
         cur = conn.cursor()
 
         # execute a statement
-        print('creating table monitoramento')
+        print('criando tabela monitoramento')
 
         cur.execute('''
-            create table monitoramento(
+            create table if not exists monitoramento(
             
             mac macaddr not null, 
             date timestamp  not null,
@@ -47,13 +49,14 @@ def create_table_monitoramento():
         # commit the changes
         conn.commit()
 
+    # printar os erros
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed.')
+            print('conexao finalizada.')
 
 
 if __name__ == '__main__':

@@ -1,17 +1,25 @@
 import paho.mqtt.client as paho
 import ast
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # fazer a inscricao na atmos-message para obter os dados
 def on_subscribe(client, userdata, mid, granted_qos):
-    print("Subscribed: "+str(mid)+" "+str(granted_qos))
+    print("inscricao realizada com sucesso: "+str(mid)+" "+str(granted_qos))
 
 
 # durante a analise da mensagem ja aproveito para adicionar os dados no banco de dados
 def on_message(client, userdata, msg):
+
     # transformar string em um dicionario
     dados = ast.literal_eval(msg.payload.decode("utf-8"))
+
+    # para verificar se TODOS os dados estao sendo adicionados corretamente
+    print(dados)
 
     add_dados_no_banco('''
             INSERT INTO monitoramento(mac, date, rssi, va, vb, vc, ia, ib, ic, wa, wb, wc) 
@@ -20,23 +28,22 @@ def on_message(client, userdata, msg):
             '''.format(dados['mac'], dados['date'], dados['rssi'], dados['va'], dados['vb'], dados['vc'], dados['ia'], dados['ib'], dados['ic'], dados['wa'], dados['wb'], dados['wc']))
 
 
-# funcao para fazer a adicao dos valores que vai ser utilizada durante a recepcao da mensagem
+# funcao para adicionar os dados no banco (vai ser utilizada durante a recepcao da mensagem)
 def add_dados_no_banco(query):
     try:
         # connect to the PostgreSQL server
-        print('Connecting to the PostgreSQL database...')
+        print('conectando ao banco de dados postgreSQL...')
 
-        conn = psycopg2.connect(
-            host="localhost",
-            database="monitoramento",
-            user="postgres",
-            password="----")
+        conn = psycopg2.connect(host=os.getenv('host'),
+                                database=os.getenv('database'),
+                                user=os.getenv('user'),
+                                password=os.getenv('password'))
 
         # create a cursor
         cur = conn.cursor()
 
         # execute a statement
-        print('adicionando valor na tabela...')
+        print('adicionando dados na tabela...')
         cur.execute(query)
         cur.close()
 
@@ -51,7 +58,7 @@ def add_dados_no_banco(query):
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed.')
+            print('conexao finalizada.')
 
 
 if __name__ == '__main__':
@@ -60,7 +67,7 @@ if __name__ == '__main__':
     client.on_subscribe = on_subscribe
     client.on_message = on_message
     client.connect('broker.hivemq.com', 1883)
-    client.subscribe('/atmos-message')
+    client.subscribe('/atmos-message', qos=2)
 
     client.loop_forever()
 
