@@ -1,8 +1,7 @@
-# https://www.postgresqltutorial.com/postgresql-python/
-
 import psycopg2
 
 
+# funcao apenas para conectar com o banco de dados e criar a tabela
 def create_table_monitoramento():
     """ Connect to the PostgreSQL database server """
     try:
@@ -44,11 +43,13 @@ def create_table_monitoramento():
                     )
 
         cur.close()
+
         # commit the changes
         conn.commit()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+
     finally:
         if conn is not None:
             conn.close()
@@ -57,3 +58,6 @@ def create_table_monitoramento():
 
 if __name__ == '__main__':
     create_table_monitoramento()
+
+
+# https://www.postgresqltutorial.com/postgresql-python/
