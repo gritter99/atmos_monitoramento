@@ -25,18 +25,18 @@ def create_table_monitoramento():
         cur.execute('''
             create table monitoramento(
             
-            mac macaddr primary key, 
-            date date not null,
+            mac macaddr not null, 
+            date timestamp  not null,
             rssi integer NOT NULL,
-            va integer not null,
-            vb integer not null,
-            vc integer not null,
-            ia integer not null,
-            ib integer not null,
-            ic integer not null,
-            wa integer not null,
-            wb integer not null,
-            wc integer not null
+            va numeric not null,
+            vb numeric not null,
+            vc numeric not null,
+            ia numeric not null,
+            ib numeric not null,
+            ic numeric not null,
+            wa numeric not null,
+            wb numeric not null,
+            wc numeric not null
             
             )
             
