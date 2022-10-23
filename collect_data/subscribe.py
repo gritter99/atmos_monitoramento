@@ -4,7 +4,8 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(
+    dotenv_path='C:/Users/Daniela Ritter/Desktop/monitoramento/atmos_monitoramento/.env')
 
 
 # fazer a inscricao na atmos-message para obter os dados

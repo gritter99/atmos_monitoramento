@@ -2,13 +2,13 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(
+    dotenv_path='C:/Users/Daniela Ritter/Desktop/monitoramento/atmos_monitoramento/.env')
 
 
 # funcao apenas para conectar com o banco de dados e criar a tabela
 def create_table_monitoramento():
     try:
-        # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
 
         conn = psycopg2.connect(
@@ -61,6 +61,3 @@ def create_table_monitoramento():
 
 if __name__ == '__main__':
     create_table_monitoramento()
-
-
-# https://www.postgresqltutorial.com/postgresql-python/
