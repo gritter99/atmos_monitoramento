@@ -1,4 +1,3 @@
-from dis import findlinestarts
 import os
 import psycopg2
 import psycopg2.extras
@@ -22,11 +21,10 @@ intervalo_sql = '''  select *
                     from monitoramento
                     where (date between '{}' and '{}') and mac = '{}'; '''
 
-medias_tempo_sql = '''  select 	avg(rssi) as rss1_medio, avg(va) as VAm, avg(vb) as VBm, avg(vc) as VCm, 
+medias_tempo_sql = '''  select 	avg(rssi)::float as rss1_medio, avg(va) as VAm, avg(vb) as VBm, avg(vc) as VCm, 
 		                        avg(ia) as IAm, avg(ib) as IBm, avg(ic) as ICm,
 		                        avg(wa) as WAm, avg(wb) as WBm, avg(wc) as WCm,
-		                         
-		                        EXTRACT(EPOCH FROM (timestamp'{}' - timestamp'{}')) AS segundos
+		                        EXTRACT(EPOCH FROM (timestamp'{}' - timestamp'{}'))::float AS segundos
                         from monitoramento
                         where (date between '{}' and '{}') and mac = '{}'
                         group by segundos;'''

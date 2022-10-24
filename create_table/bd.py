@@ -21,7 +21,7 @@ def create_table_monitoramento():
         cur = conn.cursor()
 
         # execute a statement
-        print('criando tabela monitoramento')
+        print('criando tabela para monitoramento...')
 
         cur.execute('''
             create table if not exists monitoramento(
@@ -29,15 +29,15 @@ def create_table_monitoramento():
             mac macaddr not null, 
             date timestamp  not null,
             rssi integer NOT NULL,
-            va numeric not null,
-            vb numeric not null,
-            vc numeric not null,
-            ia numeric not null,
-            ib numeric not null,
-            ic numeric not null,
-            wa numeric not null,
-            wb numeric not null,
-            wc numeric not null
+            va float not null,
+            vb float not null,
+            vc float not null,
+            ia float not null,
+            ib float not null,
+            ic float not null,
+            wa float not null,
+            wb float not null,
+            wc float not null
             
             )
             
