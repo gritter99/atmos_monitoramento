@@ -42,19 +42,24 @@ def home():
 
 @app.get("/api/dados")
 def get_dados():
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(dados_sql)
+        res = [dict((cursor.description[i][0], value)
+                    for i, value in enumerate(row)) for row in cursor.fetchall()]
 
-    conn = psycopg2.connect(
-        host=os.getenv('host'),
-        database=os.getenv('database'),
-        user=os.getenv('user'),
-        password=os.getenv('password')
-    )
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(dados_sql)
-    res = [dict((cursor.description[i][0], value)
-                for i, value in enumerate(row)) for row in cursor.fetchall()]
-
-    return res
+        return res
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 
 @app.get("/api/ultimo_dado")
