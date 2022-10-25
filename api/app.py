@@ -1,8 +1,7 @@
 import os
-import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 load_dotenv(
     dotenv_path='C:/Users/Daniela Ritter/Desktop/monitoramento/atmos_monitoramento/.env')
@@ -36,27 +35,26 @@ intervalo_segundos_sql = '''select
                         group by segundos;'''
 
 
+@app.route("/menu")
+def home():
+    return render_template("template.html")
+
+
 @app.get("/api/dados")
 def get_dados():
-    try:
-        conn = psycopg2.connect(
-            host=os.getenv('host'),
-            database=os.getenv('database'),
-            user=os.getenv('user'),
-            password=os.getenv('password')
-        )
-        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cursor.execute(dados_sql)
-        res = [dict((cursor.description[i][0], value)
-               for i, value in enumerate(row)) for row in cursor.fetchall()]
 
-        return res
+    conn = psycopg2.connect(
+        host=os.getenv('host'),
+        database=os.getenv('database'),
+        user=os.getenv('user'),
+        password=os.getenv('password')
+    )
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    cursor.execute(dados_sql)
+    res = [dict((cursor.description[i][0], value)
+                for i, value in enumerate(row)) for row in cursor.fetchall()]
 
-    except Exception as e:
-        print(e)
-    finally:
-        cursor.close()
-        conn.close()
+    return res
 
 
 @app.get("/api/ultimo_dado")
@@ -166,3 +164,7 @@ def get_intervalo_segundos():
     finally:
         cursor.close()
         conn.close()
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
