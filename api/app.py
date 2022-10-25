@@ -7,16 +7,17 @@ from flask import Flask, request, jsonify
 load_dotenv(
     dotenv_path='C:/Users/Daniela Ritter/Desktop/monitoramento/atmos_monitoramento/.env')
 
-conn = psycopg2.connect(
-    host=os.getenv('host'),
-    database=os.getenv('database'),
-    user=os.getenv('user'),
-    password=os.getenv('password')
-)
 
 app = Flask(__name__)
 
+# comandos sql
 dados_sql = ''' select * from monitoramento; '''
+
+ultimo_dado_sql = '''select * 
+                    from monitoramento
+                    order by date desc
+                    limit 1 '''
+
 intervalo_sql = '''  select *
                     from monitoramento
                     where (date between '{}' and '{}') and mac = '{}'; '''
@@ -28,16 +29,51 @@ medias_tempo_sql = '''  select 	avg(rssi)::float as rss1_medio, avg(va) as VAm, 
                         from monitoramento
                         where (date between '{}' and '{}') and mac = '{}'
                         group by segundos;'''
+intervalo_segundos_sql = '''select 	
+		                        EXTRACT(EPOCH FROM (timestamp'{}' - timestamp'{}'))::float AS segundos
+                        from monitoramento
+                        where (date between '{}' and '{}') and mac = '{}'
+                        group by segundos;'''
 
 
 @app.get("/api/dados")
 def get_dados():
     try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(dados_sql)
-        row = cursor.fetchall()
-        res = jsonify(row)
+        res = [dict((cursor.description[i][0], value)
+               for i, value in enumerate(row)) for row in cursor.fetchall()]
+
         return res
+
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.get("/api/ultimo_dado")
+def get_ultimo_dado():
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(ultimo_dado_sql)
+        res = [dict((cursor.description[i][0], value)
+               for i, value in enumerate(row)) for row in cursor.fetchall()]
+
+        return jsonify(res)
 
     except Exception as e:
         print(e)
@@ -53,10 +89,17 @@ def get_intervalo():
     data_inicio = dados["data_inicio"]
     data_final = dados["data_final"]
     try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(intervalo_sql.format(data_inicio, data_final, mac))
-        row = cursor.fetchall()
-        res = jsonify(row)
+        res = [dict((cursor.description[i][0], value)
+               for i, value in enumerate(row)) for row in cursor.fetchall()]
+
         return res
 
     except Exception as e:
@@ -74,11 +117,47 @@ def get_media_tempo():
     data_inicio = dados["data_inicio"]
     data_final = dados["data_final"]
     try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(medias_tempo_sql.format(
             data_final, data_inicio, data_inicio, data_final, mac))
-        row = cursor.fetchall()
-        res = jsonify(row)
+        res = [dict((cursor.description[i][0], value)
+               for i, value in enumerate(row)) for row in cursor.fetchall()]
+
+        return res
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.get("/api/intervalo_segundos")
+def get_intervalo_segundos():
+    dados = request.get_json()
+    mac = dados["mac"]
+    data_inicio = dados["data_inicio"]
+    data_final = dados["data_final"]
+    try:
+        conn = psycopg2.connect(
+            host=os.getenv('host'),
+            database=os.getenv('database'),
+            user=os.getenv('user'),
+            password=os.getenv('password')
+        )
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(intervalo_segundos_sql.format(
+            data_final, data_inicio, data_inicio, data_final, mac))
+        res = [dict((cursor.description[i][0], value)
+               for i, value in enumerate(row)) for row in cursor.fetchall()]
+
         return res
 
     except Exception as e:

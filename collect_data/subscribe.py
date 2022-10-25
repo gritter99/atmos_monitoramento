@@ -71,7 +71,3 @@ if __name__ == '__main__':
     client.subscribe('/atmos-message', qos=2)
 
     client.loop_forever()
-
-# fontes utilizadas:
-# https://www.hivemq.com/blog/mqtt-client-library-paho-python/
-# https://medium.com/python-point/mqtt-basics-with-python-examples-7c758e605d4

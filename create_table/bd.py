@@ -20,12 +20,15 @@ def create_table_monitoramento():
         # create a cursor
         cur = conn.cursor()
 
+        print('deletando tabela monitoramento...')
+        cur.execute(''' drop table monitoramento;''')
+
         # execute a statement
         print('criando tabela para monitoramento...')
 
         cur.execute('''
             create table if not exists monitoramento(
-            
+            _identifier serial primary key,
             mac macaddr not null, 
             date timestamp  not null,
             rssi integer NOT NULL,
