@@ -14,6 +14,7 @@ Existem rotas criadas para:
 As 3 últimas rotas necessitam de um arquivo JSON com os parâmetros desejados.
 
 bibliografia:
+
     bancos de dados:
         https://www.postgresqltutorial.com/postgresql-python/
 
