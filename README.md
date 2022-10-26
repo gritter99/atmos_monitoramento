@@ -2,13 +2,18 @@
 
 Repositório para o projeto de monitoramento inteligente - ATMOS
 
-O objetivo é pegar os dados do medidor através das mensagens no broker, 
-adicionar ao banco de dados (no caso utilizei apenas uma tabela com todos os valores) e
-fazer uma api de busca para esses valores fornecendo o mac e o intervalo de tempo que 
-queremos obter as informações.
+O objetivo é obter os dados do medidor por meio das mensagens no broker, adicionar ao banco de dados PostgreSQL e desenvolver uma api de busca para esses valores.
+
+Existem rotas criadas para:
+- obter todos os dados do medidor
+- obter o último dado adicionado
+- obter os dados do medidor em um intervalo de tempo
+- obter as médias (potência, corrente e tensão) em um determinado período
+- obter o tempo em segundos entre as datas definidas (para facilitar um possível cálculo com esse dado)
+
+As 3 últimas rotas necessitam de um arquivo JSON com os parâmetros desejados.
 
 bibliografia:
-
     bancos de dados:
         https://www.postgresqltutorial.com/postgresql-python/
 
