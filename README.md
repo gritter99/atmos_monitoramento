@@ -1,4 +1,4 @@
-# atmos_monitoramento
+# Monitoramento Inteligente
 
 Repositório para o projeto de monitoramento inteligente - ATMOS
 
